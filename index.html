@@ -1,18 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML</title>
+  <meta charset="UTF-8">
+  <title>Ejemplo Firebase</title>
 </head>
 <body>
-    <section>
-        <article>
-            <h1>HTML</h1>
-            <p>HTML (HyperText Markup Language) is the standard markup language for creating web pages. It describes the structure of a webpage using elements and tags.</p>
-            <h2>Basic Structure</h2>
-            <pre><code>&lt;!DOCTYPE html&gt;
-        </article>
-    </section>
+  <h1>Base de Datos en Firebase</h1>
+
+  <ul id="lista"></ul>
+
+  <input id="nombre" placeholder="Nombre">
+  <input id="edad" type="number" placeholder="Edad">
+  <button onclick="agregar()">Agregar</button>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+    apiKey: "AIzaSyDzTy1A7HdNUO-K0pO0vMt8OznE8Xyhnk4",
+    authDomain: "pruebadatabase-fd80b.firebaseapp.com",
+    projectId: "pruebadatabase-fd80b",
+    storageBucket: "pruebadatabase-fd80b.firebasestorage.app",
+    messagingSenderId: "151626846066",
+    appId: "1:151626846066:web:47e9996c60a0146a1e57eb",
+    measurementId: "G-GPEK9EV9V1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // 🔹 Cargar datos
+    async function cargar() {
+      lista.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "personas"));
+      querySnapshot.forEach(docu => {
+        const data = docu.data();
+        lista.innerHTML += `<li>${data.nombre} (${data.edad}) 
+          <button onclick="borrar('${docu.id}')">X</button>
+        </li>`;
+      });
+    }
+
+    // 🔹 Agregar persona
+    async function agregar() {
+      let nombre = document.getElementById("nombre").value;
+      let edad = document.getElementById("edad").value;
+      await addDoc(collection(db, "personas"), { nombre, edad });
+      cargar();
+    }
+
+    // 🔹 Borrar persona
+    async function borrar(id) {
+      await deleteDoc(doc(db, "personas", id));
+      cargar();
+    }
+
+    // 🔹 Hacer funciones globales
+    window.agregar = agregar;
+    window.borrar = borrar;
+
+    cargar();
+  </script>
 </body>
 </html>
